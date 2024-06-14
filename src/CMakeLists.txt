@@ -1,5 +1,10 @@
 
 link_libraries(${OPENCL_LIB} util)
-add_subdirectory(vecadd)
-add_subdirectory(device-info)
-add_subdirectory(boxadd)
+file(GLOB SUBDIRS LIST_DIRECTORIES true RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *)
+
+# List all the directory
+foreach(SUBDIR ${SUBDIRS})
+  if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${SUBDIR}")
+    add_subdirectory("${SUBDIR}")
+  endif()
+endforeach()
