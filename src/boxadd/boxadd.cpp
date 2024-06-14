@@ -3,18 +3,19 @@
 #include "utils.h"
 #include <CL/cl.h>
 #include <CL/opencl.hpp>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <vector>
 
 #define THREADS 27
 
-
 using namespace utils;
 
 int main() {
- int SX = 3;
-int SY = 3;
- int SZ = 3;
+  int SX = 3;
+  int SY = 3;
+  int SZ = 3;
   using namespace std;
   // const char *KernelFile = VECADD_SOURCE;
   std::string KernelContent;
@@ -58,16 +59,16 @@ int SY = 3;
   Queue.finish();
   std::vector<int> C(THREADS);
   Queue.enqueueReadBuffer(BufferC, true, 0, sizeof(float) * THREADS, &C[0]);
-  for (auto c : C)
-    std::cout << c << " ";
-  // // test
-  // // for (int i = 0; i < 2048; i++) {
-  // //   if (A[i] + B[i] != C[i]) {
-  // //     cout << A[i] << ": " << B[i] << ": " << C[i] << "error" << i <<
-  // endl;
-  // //     exit(1);
-  // //   }
-  // // }
-  // cout << "Running success" << endl;
-  // cl::flush();
+  // Check the result is right or not
+  for (int z = 0; z < SZ; z++) {
+    for (int y = 0; y < SY; y++) {
+      for (int x = 0; x < SX; x++) {
+        int res = C[z * SY * SX + y * SX + x];
+        if (res != C_BOX[z][y][x]) {
+          printf("Expected:%d, got: %d: , Z:%d, Y:%d, X:%d \n", C_BOX[z][y][x],
+                 res, z, y, x);
+        }
+      }
+    }
+  }
 }
